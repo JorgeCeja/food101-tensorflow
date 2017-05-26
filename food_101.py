@@ -51,12 +51,12 @@ def get_classes(file_path):
 
     return classes
 
-def create_model(dimentions, num_classes):
+def create_model(num_classes):
     base_model = ResNet50(
         weights='imagenet',
         include_top=False,
         input_tensor=Input(
-            shape=dimentions))
+            shape=(224, 224, 3)))
 
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
@@ -97,8 +97,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    dimentions = (224, 224, 3)
-
     if args.mode == 'train':
         X_train, X_test = setup_generator('train', 'test', args.batch_size)
 
@@ -111,7 +109,7 @@ if __name__ == '__main__':
         callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
                                        verbose=1, save_best_only=True))
 
-        model_final = create_model(dimentions, X_train.num_class)
+        model_final = create_model(X_train.num_class)
 
         train_model(model_final, X_train, X_test, callbacks, args)
     else:
