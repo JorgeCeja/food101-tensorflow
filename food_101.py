@@ -9,6 +9,7 @@ from keras.models import Model, load_model
 from keras.layers import Dense
 from keras.layers import Input
 import numpy as np
+import argparse
 
 def setup_generator(train_path, test_path, batch_size):
     train_datagen = ImageDataGenerator(
@@ -65,15 +66,16 @@ def create_model(dimentions, num_classes):
 
     return model_final
 
-def train_model(model_final, train_generator, validation_generator, callbacks):
+def train_model(model_final, train_generator, validation_generator, callbacks, args):
     model_final.compile(
         loss='categorical_crossentropy',
         optimizer='adam',
         metrics=['accuracy'])
 
     model_final.fit_generator(train_generator, validation_data=validation_generator,
-                              epochs=25, callbacks=[checkpointer],
-                              steps_per_epoch=train_generator.samples, validation_steps=validation_generator.samples)
+                              epochs=args.epoch, callbacks=[checkpointer],
+                              steps_per_epoch=train_generator.samples,
+                              validation_steps=validation_generator.samples)
 
 def load_model(model_final, weights_path):
    model_final = create_model()
@@ -82,27 +84,39 @@ def load_model(model_final, weights_path):
    return model_final
 
 if __name__ == '__main__':
-    batch_size = 32
+    parser = argparse.ArgumentParser(description='Food 101 Program')
+    parser.add_argument('-m', help='train or inference model', dest='mode',
+                        type=str, default='train')
+    parser.add_argument('-b', help='batch size', dest='batch_size', type=int, default=32)
+    parser.add_argument('-p', help='path of the saved model', dest='model_path',
+                        type=str, default='saved_models/food-101-epoch-01.hdf5')
+    parser.add_argument('-i', help='path to test image', dest='image_path',
+                        type=str, default='')
+    parser.add_argument('-e', help='epochs to train the model', dest='epochs',
+                        type=int, default=25)
+
+    args = parser.parse_args()
+
     dimentions = (224, 224, 3)
 
-    ### use accordingly
-    X_train, X_test = setup_generator('train', 'test', batch_size)
+    if args.mode == 'train':
+        X_train, X_test = setup_generator('train', 'test', args.batch_size)
 
-    print(X_train)
+        # debug purposes
+        print(X_train)
 
-    # call backs have to be array
-    callbacks = []
-    # add a callback
-    callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
-                                   verbose=1, save_best_only=True))
+        # call backs have to be array
+        callbacks = []
+        # add a callback
+        callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
+                                       verbose=1, save_best_only=True))
 
-    model_final = create_model(dimentions, X_train.num_class)
+        model_final = create_model(dimentions, X_train.num_class)
 
-    ### use accordingly
-    #train_model(model_final, X_train, X_test, callbacks)
-
-    #trained_model = load_model(model_final, 'saved_models/food-101-epoch-01.hdf5')
-    image = load_image('path_to_image')
-    preds = model.predict(image)
-    classes = get_classes('meta/classes.txt')
-    print("the image is: ", classes([np.argmax(preds)))
+        train_model(model_final, X_train, X_test, callbacks, args)
+    else:
+        trained_model = load_model(model_final, args.model_path)
+        image = load_image(args.image_path)
+        preds = model.predict(image)
+        classes = get_classes('meta/classes.txt')
+        print("the image is: ", classes([np.argmax(preds)))
