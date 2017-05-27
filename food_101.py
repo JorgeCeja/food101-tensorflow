@@ -3,7 +3,7 @@ from __future__ import division
 
 from keras.preprocessing.image import load_img, img_to_array, ImageDataGenerator
 from keras.applications.resnet50 import ResNet50
-from keras.layers import GlobalAveragePooling2D
+from keras.layers import GlobalAveragePooling2D, Dropout
 from keras.callbacks import ModelCheckpoint
 from keras.models import Model, load_model
 from keras.layers import Dense
@@ -51,7 +51,7 @@ def get_classes(file_path):
 
     return classes
 
-def create_model(num_classes):
+def create_model(num_classes, dropout):
     base_model = ResNet50(
         weights='imagenet',
         include_top=False,
@@ -60,6 +60,7 @@ def create_model(num_classes):
 
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
+    x = Dropout(dropout)(x)
     predictions = Dense(num_classes, activation='softmax')(x)
 
     model_final = Model(input=base_model.input, output=predictions)
@@ -94,6 +95,8 @@ if __name__ == '__main__':
                         type=str, default='')
     parser.add_argument('-e', help='epochs to train the model', dest='epochs',
                         type=int, default=25)
+    parser.add_argument('-d', help='decimal value for dropout', dest='dropout',
+                        type=float, default=0.0)
 
     args = parser.parse_args()
 
@@ -109,7 +112,7 @@ if __name__ == '__main__':
         callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
                                        verbose=1, save_best_only=True))
 
-        model_final = create_model(X_train.num_class)
+        model_final = create_model(X_train.num_class, args.dropout)
 
         train_model(model_final, X_train, X_test, callbacks, args)
     else:
