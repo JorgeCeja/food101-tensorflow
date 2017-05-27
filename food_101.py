@@ -117,4 +117,4 @@ if __name__ == '__main__':
         image = load_image(args.image_path)
         preds = model.predict(image)
         classes = get_classes('meta/classes.txt')
-        print("the image is: ", classes([np.argmax(preds)))
+        print("the image is: ", classes([np.argmax(preds)]))
