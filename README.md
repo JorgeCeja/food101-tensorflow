@@ -22,3 +22,10 @@ TODO: requirements.txt
 ## History
 
 1. Initial test with 48% accuracy after 2 epochs!
+2. Add command line arguments including dropout
+
+## Todo
+
+1. Find a fast way to handle big dataset into low memory systems
+2. Improve image augmentation and loading speed
+3. Improve hyper choices and suggestions parameters
