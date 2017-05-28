@@ -2,7 +2,9 @@
 
 ## Installation
 
-TODO: requirements.txt
+Note: Tested with python 3.5 but includes `__future__`
+
+`pip install -r requirements.txt`
 
 ## Usage
 
