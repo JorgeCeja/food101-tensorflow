@@ -40,7 +40,7 @@ Inspired by HBO’s Silicon Valley “Not Hotdog” App, I set out to classify n
 
 ## Authors
 
-* **Jorge Ceja** - *Initial work - [Account](https://github.com/JorgeCeja)
+* **Jorge Ceja** - *Initial work* - [Account](https://github.com/JorgeCeja)
 
 ## Acknowledgments
 
