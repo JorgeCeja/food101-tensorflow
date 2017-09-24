@@ -1,6 +1,6 @@
 # Food-101 Dataset Using Transfer Learning
 
-Inspired by HBO’s Silicon Valley “Not Hotdog” App, I set out to classify not only hotdogs but 101 categories of different foods. The The other goal was to use data augmentation and transfer learning and data augmentation to achive fast(er) training time and accuracy. 
+Inspired by HBO’s Silicon Valley “Not Hotdog” App, I set out to classify not only hotdogs but 101 categories of different foods. The other goal was to use data augmentation and transfer learning and data augmentation to achieve fast(er) training time and accuracy. 
 
 ### Prerequisites
 
@@ -14,14 +14,14 @@ Inspired by HBO’s Silicon Valley “Not Hotdog” App, I set out to classify n
 
 1. `git clone ` + repo URL
 2. cd to repo
-3. `pip install -r /requirements/requirement.txt` if packages are not yet installed
+3. `pip install -r /requirements/requirement.txt` If packages are not yet installed
 - Train model: `python food_101.py -m train `
 - Test model: `python food_101.py -m test -i test_image.jpg`
 
 ## History
 
 1. Initial test with 48% accuracy after 2 epochs!
-2. Add command line arguments including dropout
+2. Add command line arguments including dropout.
 
 ## Built With
 
