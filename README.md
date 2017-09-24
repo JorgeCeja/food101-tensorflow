@@ -1,17 +1,34 @@
-# Food-101 Using Transfer Learning
+# Food-101 Dataset Using Transfer Learning
 
-## Installation
+Inspired by HBO’s Silicon Valley “Not Hotdog” App, I set out to classify not only hotdogs but 101 categories of different foods. The The other goal was to use data augmentation and transfer learning and data augmentation to achive fast(er) training time and accuracy. 
 
-Note: Tested with python 3.5 but includes `__future__`
+### Prerequisites
 
-`pip install -r requirements.txt`
+- [Food-101 dataset](https://www.vision.ee.ethz.ch/datasets_extra/food-101/)
+- Nvidia GPU or cloud GPU instances for training 
+- Tensoflow 
+- Keras
+- Numpy
 
-## Usage
+## Getting Started
 
-1. Download the [food-101 dataset](https://www.vision.ee.ethz.ch/datasets_extra/food-101/)
-2. Place all files alongside the python file
-3. Run `python food-101.py`
+1. `git clone ` + repo URL
+2. cd to repo
+3. `pip install -r /requirements/requirement.txt` if packages are not yet installed
+- Train model: `python food_101.py -m train `
+- Test model: `python food_101.py -m test -i test_image.jpg`
 
+## History
+
+1. Initial test with 48% accuracy after 2 epochs!
+2. Add command line arguments including dropout
+
+## Built With
+
+* [Tensoflow](https://www.tensorflow.org) - Software library for numerical computation using data flow graphs
+* [Keras](https://keras.io) - Deep Learning library
+* [Matplotlib](https://matplotlib.org) - Python 2D plotting library
+* [Numpy](http://www.numpy.org) - Package for scientific computing
 
 ## Contributing
 
@@ -21,13 +38,12 @@ Note: Tested with python 3.5 but includes `__future__`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## History
+## Authors
 
-1. Initial test with 48% accuracy after 2 epochs!
-2. Add command line arguments including dropout
+* **Jorge Ceja** - *Initial work - [Account](https://github.com/JorgeCeja)
 
-## Todo
+## Acknowledgments
 
-1. Find a fast way to handle big dataset into low memory systems
-2. Improve image augmentation and loading speed
-3. Improve hyper choices and suggestions parameters
+* Food-101 – Mining Discriminative Components with Random Forests - [Research Paper](https://www.vision.ee.ethz.ch/datasets_extra/food-101/static/bossard_eccv14_food-101.pdf)
+* Deep Residual Learning for Image Recognition - [arXiv](https://arxiv.org/abs/1512.03385)
+* Going Deeper with Convolutions ("Inception") - [arXiv](https://arxiv.org/abs/1409.4842)
