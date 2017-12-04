@@ -66,7 +66,7 @@ def create_model(num_classes, dropout, shape):
     x = Dropout(dropout)(x)
     predictions = Dense(num_classes, activation='softmax')(x)
 
-    model_final = Model(input=base_model.input, output=predictions)
+    model_final = Model(inputs=base_model.input, outputs=predictions)
 
     return model_final
 
@@ -78,7 +78,7 @@ def train_model(model_final, train_generator, validation_generator, callbacks, a
         metrics=['accuracy'])
 
     model_final.fit_generator(train_generator, validation_data=validation_generator,
-                              epochs=args.epoch, callbacks=[callbacks],
+                              epochs=args.epochs, callbacks=callbacks,
                               steps_per_epoch=train_generator.samples,
                               validation_steps=validation_generator.samples)
 
@@ -116,6 +116,7 @@ if __name__ == '__main__':
 
         # call backs have to be array
         callbacks = []
+        
         # add a callback
         callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
                                        verbose=1, save_best_only=True))
