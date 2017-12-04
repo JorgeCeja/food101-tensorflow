@@ -11,7 +11,8 @@ from keras.layers import Input
 import numpy as np
 import argparse
 
-def setup_generator(train_path, test_path, batch_size):
+
+def setup_generator(train_path, test_path, batch_size, dimentions):
     train_datagen = ImageDataGenerator(
         rotation_range=40,
         width_shift_range=0.2,
@@ -26,18 +27,19 @@ def setup_generator(train_path, test_path, batch_size):
 
     train_generator = train_datagen.flow_from_directory(
         train_path,  # this is the target directory
-        target_size=dimentions[:2],
+        target_size=dimentions,
         batch_size=batch_size)
 
     validation_generator = test_datagen.flow_from_directory(
         test_path, # this is the target directory
-        target_size=dimentions[:2],
+        target_size=dimentions,
         batch_size=batch_size)
 
     return train_generator, validation_generator
 
-def load_image(img_path, rescale=1. / 255):
-    img = image.load_img(img_path, target_size=(224, 224))
+
+def load_image(img_path, dimentions, rescale=1. / 255):
+    img = image.load_img(img_path, target_size=dimentions)
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x *= rescale # rescale the same as when trained
@@ -51,12 +53,13 @@ def get_classes(file_path):
 
     return classes
 
-def create_model(num_classes, dropout):
+
+def create_model(num_classes, dropout, shape):
     base_model = ResNet50(
         weights='imagenet',
         include_top=False,
         input_tensor=Input(
-            shape=(224, 224, 3)))
+            shape=shape))
 
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
@@ -67,6 +70,7 @@ def create_model(num_classes, dropout):
 
     return model_final
 
+
 def train_model(model_final, train_generator, validation_generator, callbacks, args):
     model_final.compile(
         loss='categorical_crossentropy',
@@ -74,15 +78,17 @@ def train_model(model_final, train_generator, validation_generator, callbacks, a
         metrics=['accuracy'])
 
     model_final.fit_generator(train_generator, validation_data=validation_generator,
-                              epochs=args.epoch, callbacks=[checkpointer],
+                              epochs=args.epoch, callbacks=[callbacks],
                               steps_per_epoch=train_generator.samples,
                               validation_steps=validation_generator.samples)
 
-def load_model(model_final, weights_path):
-   model_final = create_model()
+
+def load_model(model_final, weights_path, shape):
+   model_final = create_model(101, 0, shape)
    model_final.load_weights(weights_path)
 
    return model_final
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Food 101 Program')
@@ -100,8 +106,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    shape = (224, 224, 3)
+
     if args.mode == 'train':
-        X_train, X_test = setup_generator('train', 'test', args.batch_size)
+        X_train, X_test = setup_generator('train', 'test', args.batch_size, shape[:2])
 
         # debug purposes
         print(X_train)
@@ -112,12 +120,12 @@ if __name__ == '__main__':
         callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
                                        verbose=1, save_best_only=True))
 
-        model_final = create_model(X_train.num_class, args.dropout)
+        model_final = create_model(X_train.num_class, args.dropout, shape)
 
         train_model(model_final, X_train, X_test, callbacks, args)
     else:
-        trained_model = load_model(model_final, args.model_path)
-        image = load_image(args.image_path)
-        preds = model.predict(image)
+        trained_model = load_model(model_final, args.model_path, shape)
+        image = load_image(args.image_path, shape[:2])
+        preds = trained_model.predict(image)
         classes = get_classes('meta/classes.txt')
         print("the image is: ", classes([np.argmax(preds)]))
