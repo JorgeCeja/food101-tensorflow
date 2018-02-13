@@ -79,8 +79,8 @@ def train_model(model_final, train_generator, validation_generator, callbacks, a
 
     model_final.fit_generator(train_generator, validation_data=validation_generator,
                               epochs=args.epochs, callbacks=callbacks,
-                              steps_per_epoch=train_generator.samples,
-                              validation_steps=validation_generator.samples)
+                              steps_per_epoch=train_generator.samples//args.batch_size,
+                              validation_steps=validation_generator.samples//args.batch_size)
 
 
 def load_model(model_final, weights_path, shape):
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', help='epochs to train the model', dest='epochs',
                         type=int, default=25)
     parser.add_argument('-d', help='decimal value for dropout', dest='dropout',
-                        type=float, default=0.0)
+                        type=float, default=0.2)
 
     args = parser.parse_args()
 
@@ -118,10 +118,10 @@ if __name__ == '__main__':
         callbacks = []
         
         # add a callback
-        callbacks.append(ModelCheckpoint(filepath='saved_models/food-101-epoch-{epoch:02d}.hdf5',
+        callbacks.append(ModelCheckpoint(filepath='saved_models/weights.epoch-{epoch:02d}-val_loss-{val_loss:.2f}.hdf5',
                                        verbose=1, save_best_only=True))
 
-        model_final = create_model(X_train.num_class, args.dropout, shape)
+        model_final = create_model(X_train.num_classes, args.dropout, shape)
 
         train_model(model_final, X_train, X_test, callbacks, args)
     else:
